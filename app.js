@@ -254,9 +254,26 @@
   async function copyText(t) {
     try { await navigator.clipboard.writeText(t); } catch (e) { const ta = el('textarea'); ta.value = t; document.body.append(ta); ta.select(); try { document.execCommand('copy'); } catch (x) {} ta.remove(); }
   }
+  function writtenText(ti) {
+    const t = T[ti], out = [];
+    t.sections.forEach((sec, si) => {
+      const rows = [];
+      sec.items.forEach((it, ii) => {
+        if (!(it.t === 'open' || it.personal)) return;
+        const a = S.ans[idOf(ti, si, ii)];
+        if (!a || a.val == null || String(a.val).trim() === '') return;
+        const q = String(it.q || '').replace(/\s+/g, ' ').replace(/[.…]{3,}/g, '').trim();
+        rows.push(`${it.n}. ${q ? q + ' ' : ''}→ ${a.val}`);
+      });
+      if (rows.length) out.push(`${sec.title}`, ...rows);
+    });
+    return out;
+  }
   function tutText(ti) {
     const t = T[ti], s = tutStats(ti);
-    return [`Name: ${S.name.trim() || '(no name)'}`, `Tutorial ${t.n}${t.sub ? ' – ' + t.sub : ''}`, `Score: ${fmt(s.mark)}/${MAX}`].join('\n');
+    const L = [`Name: ${S.name.trim() || '(no name)'}`, `Tutorial ${t.n}${t.sub ? ' – ' + t.sub : ''}`, `Score: ${fmt(s.mark)}/${MAX}`];
+    const w = writtenText(ti); if (w.length) L.push('', 'Written answers:', ...w);
+    return L.join('\n');
   }
   function tutResult(ti) {
     const t = T[ti], s = tutStats(ti), card = el('section', 'sec resultcard tutres');
@@ -370,7 +387,7 @@
           if (it.sayAfter) { fb.append(' '); fb.append(speakBtn(it.sayAfter, 'Listen to the word')); }
         } else {
           fb.className = 'fb info';
-          fb.textContent = it.personal ? '✓ Saved. This is your own answer, so it is not scored.' : '✓ Answer saved. Your teacher will confirm this one. It is not counted in your score yet.';
+          fb.textContent = it.personal ? '✓ Saved. This is your own answer, so it is not scored.' : '✓ Answer saved. Use Copy or Share on the Results page to send it to your teacher. It is not counted in your score.';
         }
       };
       function pick(i) { done(isScored(it) ? i === it.a : null, i); lock(i); }
@@ -408,7 +425,7 @@
       if (!it.short) inp.rows = 3; else inp.type = 'text';
       inp.placeholder = 'Write here…'; inp.setAttribute('aria-label', 'Your answer'); inp.autocomplete = 'off'; inp.spellcheck = false;
       const btn = el('button', 'btn small', 'Save'); btn.type = 'button';
-      const lock = v => { inp.value = v; inp.disabled = true; btn.remove(); fb.className = 'fb info'; fb.textContent = '✓ Saved.' + (it.model ? ' Model answer: ' + it.model + (/[.!?]$/.test(it.model.trim()) ? '' : '.') : ' Your teacher will check this answer.') + ' It is not scored.'; };
+      const lock = v => { inp.value = v; inp.disabled = true; btn.remove(); fb.className = 'fb info'; fb.textContent = '✓ Saved.' + (it.model ? ' Model answer: ' + it.model + (/[.!?]$/.test(it.model.trim()) ? '' : '.') : ' Copy or share your results to send this answer to your teacher.') + ' It is not scored.'; };
       btn.onclick = () => { if (!inp.value.trim()) return; done(null, inp.value.trim()); lock(inp.value.trim()); };
       body.append(inp, btn); if (a) lock(a.val);
     }
@@ -422,6 +439,7 @@
     L.push(`Name: ${S.name.trim() || '(no name)'}`, '');
     T.forEach((t, i) => { const s = tutStats(i); L.push(`Tutorial ${t.n}${t.sub ? ' – ' + t.sub : ''}: ${fmt(s.mark)}/${MAX}`); });
     L.push('', `Total score: ${fmt(o.marks)}/${o.maxMarks}`);
+    T.forEach((t, i) => { const w = writtenText(i); if (w.length) L.push('', `--- Tutorial ${t.n}: written answers ---`, ...w); });
     return L.join('\n');
   }
   function renderResults() {
