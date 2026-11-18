@@ -3,7 +3,7 @@ const COURSE = {
  "header": {
   "country": "Kingdom of Saudi Arabia",
   "body": "Technical and Vocational Training Corporation",
-  "college": "Jeddah Technical College for girls",
+  "college": "Jeddah Technical College for Girls",
   "course": "English language 1 – Eng.111",
   "by": "Prepared by Ms. Ashwaq Alghamdi",
   "activities": "Activities"
