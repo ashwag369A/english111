@@ -69,7 +69,7 @@
       const tts = () => {
         if (!('speechSynthesis' in window)) { toast('Speech is not available on this device.'); return; }
         let u;
-        if (who) u = speakAs(txt, who); else { u = new SpeechSynthesisUtterance(String(txt).replace(/^[AB]:\s*/, '').replace(/_{2,}/g, ' blank ')); u.lang = 'en-GB'; u.rate = 0.85; }
+        if (who) u = speakAs(txt, who); else { u = new SpeechSynthesisUtterance(String(txt).replace(/^family:/, '').replace(/^[AB]:\s*/, '').replace(/_{2,}/g, ' blank ')); u.lang = 'en-GB'; u.rate = 0.85; }
         u.onend = () => setTimeout(next, 350); speechSynthesis.speak(u);
       };
       if (!id) { tts(); return; }
@@ -322,7 +322,7 @@
   function familyCard() {
     const d = el('div', 'family');
     [['👩', 'mother'], ['👨', 'father'], ['👦', 'brother'], ['👧', 'sister'], ['👵', 'grandmother'], ['👴', 'grandfather'], ['👩', 'aunt'], ['👨', 'uncle']].forEach(([e, w]) => {
-      const b = el('button', 'fam'); b.type = 'button'; b.innerHTML = `<span class="e">${e}</span><span>${w}</span>`; b.onclick = () => speak(w); d.append(b);
+      const b = el('button', 'fam'); b.type = 'button'; b.innerHTML = `<span class="e">${e}</span><span>${w}</span>`; b.onclick = () => speak('family:' + w); d.append(b);
     });
     return d;
   }

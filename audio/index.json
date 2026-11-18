@@ -85,5 +85,13 @@
 "yes, it’s 5556872.": "086",
 "5556872. okay, i’ll make sure she gets the message.": "080",
 "thanks very much for your help. bye!": "087",
-"goodbye!": "081"
+"goodbye!": "081",
+"family:mother": "088",
+"family:father": "089",
+"family:brother": "090",
+"family:sister": "091",
+"family:grandmother": "092",
+"family:grandfather": "093",
+"family:aunt": "094",
+"family:uncle": "095"
 }
